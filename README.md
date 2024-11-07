@@ -1,26 +1,117 @@
-#  Как работать с репозиторием финального задания
+# Kitygram
+Kittygram - это небольшая социальная сеть для любителей кошек, где можно делиться их фотографиями и историями.
 
-## Что нужно сделать
+## Иcпользованные технологии:
+### Backend:
+- Django
+- DRF
+- Gunicorn
+- Djoser
+- Pillow
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+### Server:
+- Nginx
 
-## Как проверить работу с помощью автотестов
+### CI/CD:
+- Docker
+- Docker compose
+- Github Workflow
 
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
+
+## Как развернуть проект на сервере linux
+Скачайте docker-compose.yml из [репозитория](https://github.com/NRmously/kittygram_final)
+
+Создайте файл с переменными окружения с названием .env и наполните его своими данными:
+```
+touch .env
 ```
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
+Пример заполнения:
+```
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_DB=django
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY=django-insecure-cg6*%6d51ef8f#4!r3*$vmxm4)abgAgfasgasf
+ALLOWED_HOSTS=127.0.0.1,localhost,923.223.70.175,pet-kittygram.ddns.net
+DEBUG=True
+# Что бы использовать sqlite - раскомментируйте строку ниже
+# USE_SQLITE=1
+```
 
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
+Запустите Docker compose:
+```
+sudo docker compose -f docker-compose.yml pull
+sudo docker compose -f docker-compose.yml down
+sudo docker compose -f docker-compose.yml up -d
+```
 
-## Чек-лист для проверки перед отправкой задания
+Примените миграции и соберите статику:
+```
+sudo docker compose -f docker-compose.yml exec backend python manage.py migrate
+sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic
+sudo docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /backend_static/static/
+```
 
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+Для автодеплоя на гитхабе нужно добавить перменные в Secrets на гитхабе:
+```
+DOCKER_PASSWORD - пароль от Docker Hub
+DOCKER_USERNAME - имя пользователя Docker Hub
+HOST - ip сервера
+SSH_KEY - ключ ssh для доступа к удаленному серверу
+SSH_PASSPHRASE - пароль ssh
+TELEGRAM_TO - id пользователя TELEGRAM
+TELEGRAM_TOKEN - TELEGRAM токен
+USER - имя пользователя сервера
+```
+
+Текст:
+```
+КОД
+```
+1. Скачайте docker-compose.yml из репозитория https://github.com/EmpIreR777/kittygram_final
+2. Создайте файл с переменными окружения в корневой директории проекта с названием .env
+```
+touch .env
+```
+3. Создайте файл с переменными окружения
+```
+POSTGRES_DB=<БазаДанных>
+POSTGRES_USER=<имя пользователя>
+POSTGRES_PASSWORD=<пароль>
+DB_NAME=<имя БазыДанных>
+DB_HOST=db
+DB_PORT=5432
+SECRET_KEY=<ключ Django>
+DEBUG=<DEBUG True/False>
+ALLOWED_HOSTS=<разрешенные хосты>
+```
+
+4. Запустите Dockercompose
+```
+sudo docker compose -f docker-compose.yml pull
+sudo docker compose -f docker-compose.yml down
+sudo docker compose -f docker-compose.yml up -d
+```
+5. Сделайте миграции и соберите статику
+```
+sudo docker compose -f docker-compose.yml exec backend python manage.py migrate
+sudo docker compose -f docker-compose.yml exec backend python manage.py collectstatic
+sudo docker compose -f docker-compose.yml exec backend cp -r /app/collected_static/. /backend_static/static/ 
+```
+
+## Автодеплой на Git Hub Action
+Добавьте перменные в Secrets
+```
+DOCKER_PASSWORD - пароль от Docker Hub
+DOCKER_USERNAME - имя пользователя Docker Hub
+HOST - ip сервера
+SSH_KEY - ключ ssh для доступа к удаленному серверу
+SSH_PASSPHRASE - пароль ssh
+TELEGRAM_TO - id пользователя TELEGRAM
+TELEGRAM_TOKEN - TELEGRAM токен
+USER - имя пользователя сервера
+```
+
+## Автор [NRmously](https://github.com/NRmously)
