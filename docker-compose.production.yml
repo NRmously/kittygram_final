@@ -1,37 +1,42 @@
 version: '3'
 
 volumes:
-  pg_data_production:
-  static_volume:
-  media_volume:
+  pg_data:
+  static:
+  media:
 
 services:
   db:
-    container_name: postgre_db_prod
-    image: postgres:13.10
+    image: postgres:13
     env_file: .env
     volumes:
-      - pg_data_production:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
+
   backend:
-    container_name: backend_prod
     image: nrmously/kittygram_backend
     env_file: .env
+    depends_on:
+      - db
     volumes:
-      - static_volume:/backend_static
-      - media_volume:/media
+      - static:/backend_static
+      - media:/app/media
+
   frontend:
-    container_name: frontend_prod
-    image: nrmously/kittygram_frontend
     env_file: .env
-    command: cp -r /app/build/. /static/
+    image: nrmously/kittygram_frontend
+    command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static_volume:/static
+      - static:/frontend_static
+    depends_on:
+      - backend
+
   gateway:
-    container_name: nginx_prod
     image: nrmously/kittygram_gateway
     env_file: .env
+    depends_on:
+      - frontend
     volumes:
-      - static_volume:/static/
-      - media_volume:/media
+      - static:/staticfiles/
+      - media:/app/media
     ports:
       - 9000:80
