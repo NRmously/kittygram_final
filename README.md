@@ -1,3 +1,4 @@
+![Workflow Status](https://github.com/NRmously/kittygram_final/actions/workflows/main.yml/badge.svg)
 # Kitygram
 Kittygram - это небольшая социальная сеть для любителей кошек, где можно делиться их фотографиями и историями.
 
